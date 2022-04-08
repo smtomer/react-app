@@ -67,24 +67,53 @@ app.get('/users/:id', (req, res) => {
 });
 
 app.post('/users', (req, res) => {
+    
+    console.log("app.post");
+
     const userToAdd = req.body;
     addUser(userToAdd);
-    res.status(200).end();
+    userToAdd.id = makeId();
+    res.status(201).send(userToAdd);
 });
 
 app.delete('/users', (req, res) => {
     const userToDelete = req.body;
     deleteUser(userToDelete);
-    res.status(200).end();
+    res.status(204).end();
 });
+
+app.delete('/users/:id', (req, res) => {
+    const id = req.params['id']; //or req.params.id
+    let result = findUserById(id);
+    if (result === undefined || result.length == 0)
+        res.status(404).send('Resource not found.');
+    else {
+        deleteUser(result);
+        res.status(204).end();
+    }
+});
+
+
+function makeId(){
+    var c = require("crypto");
+    var id = c.randomBytes(3).toString('hex');
+    return id;
+}
+
 
 function addUser(user){
     users['users_list'].push(user);
+    
 }
 function deleteUser(user){
     const index = users['users_list'].indexOf(user);
     users['users_list'].splice(index, 1);
 }
+// function deleteUser(id){
+//     const user = findUserById(id);
+//     const index = users['users_list'].indexOf(user);
+//     users['users_list'].splice(index, 1);
+// }
 
 function findUserById(id) {
     return users['users_list'].find( (user) => user['id'] === id); // or line below
