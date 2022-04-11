@@ -13,6 +13,7 @@ function removeOneCharacter(index){
   });
   setCharacters(updated);
 }
+
 async function fetchAll(){
   try {
      const response = await axios.get('http://localhost:5000/users');
