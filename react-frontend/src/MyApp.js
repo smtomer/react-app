@@ -7,11 +7,24 @@ import axios from 'axios';
 function MyApp() {
   const [characters, setCharacters] = useState([]);
 
+// function removeOneCharacter(index){
+//   const updated = characters.filter((character, i) => {
+//     return i !== index
+//   });
+//   setCharacters(updated);
+// }
 function removeOneCharacter(index){
-  const updated = characters.filter((character, i) => {
-    return i !== index
-  });
-  setCharacters(updated);
+    const id2 = characters[index].id;
+    //const result = await axios.delete('http://localhost:5000/users/' + id2);
+    console.log(id2);
+    makeDelete(id2).then( (result) => {
+      if (result && result.status === 204){
+        const updated = characters.filter((character, i) => {
+        return i !== index
+        }); 
+      setCharacters(updated);
+      }
+    });
 }
 
 async function fetchAll(){
@@ -35,6 +48,12 @@ async function makePostCall(person){
      return false;
   }
 }
+
+async function makeDelete(id2){
+  const result = await axios.delete('http://localhost:5000/users/' + id2);
+  return result;
+}
+
 useEffect(() => {
   fetchAll().then( result => {
      if (result)
@@ -44,9 +63,11 @@ useEffect(() => {
 function updateList(person) { 
    makePostCall(person).then( result => {
    if (result && result.status === 201)
-      setCharacters([...characters, person] );
-   });
+      setCharacters([...characters, result.data] );
+   }); 
 }
+
+
 return (
     <div className="container">
       <Table characterData={characters} removeCharacter={removeOneCharacter} />
